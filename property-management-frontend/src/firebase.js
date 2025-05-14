@@ -2,12 +2,12 @@ import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCyUB07MZSRBki1rxNalcSIi3zGfvp3fDs",
-  authDomain: "jnd-project-management.firebaseapp.com",
-  projectId: "jnd-project-management",
-  storageBucket: "jnd-project-management.appspot.com",
-  messagingSenderId: "910284350638",
-  appId: "1:910284350638:web:4e0471cb0603e2dd14f93f"
+  apiKey: "AIzaSyBY8ihV5D4KV1x9OPFqSaJrSgCH2rvg3Vo",
+  authDomain: "jndpropertymanager.firebaseapp.com",
+  projectId: "jndpropertymanager",
+  storageBucket: "jndpropertymanager.appspot.com",
+  messagingSenderId: "321293540552",
+  appId: "1:321293540552:web:83094dc246e2206e6599fd"
 };
 
 const app = initializeApp(firebaseConfig);
