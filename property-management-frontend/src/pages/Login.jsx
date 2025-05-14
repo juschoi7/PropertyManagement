@@ -1,65 +1,83 @@
-import { useState } from "react";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { useNavigate } from "react-router-dom";
-import { auth } from "../firebase";
+import React, { useState } from "react";
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../firebase"; // your initialized auth
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const navigate = useNavigate();
+  const [role, setRole] = useState("tenant"); // default role
+  const [error, setError] = useState("");
 
-  const login = async () => {
-    setLoading(true);
-    setError(null);
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setError("");
+
     try {
-      await signInWithEmailAndPassword(auth, email, password);
-      navigate("/dashboard");
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+
+      // Save role to localStorage or state management
+      localStorage.setItem("userRole", role);
+
+      // redirect based on role
+      if (role === "tenant") {
+        window.location.href = "/tenant/dashboard";
+      } else {
+        window.location.href = "/landlord/dashboard";
+      }
     } catch (err) {
-      setError("Invalid email or password");
-    } finally {
-      setLoading(false);
+      console.error("Login error", err);
+      setError(err.message);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center">
-      <div className="bg-white p-8 rounded-lg shadow-lg max-w-sm w-full">
-        <h2 className="text-3xl font-semibold text-center text-gray-800 mb-6">
-          Login
-        </h2>
-        
-        {error && <p className="text-red-500 text-sm text-center mb-4">{error}</p>}
+    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+      <div className="max-w-md w-full bg-white p-8 rounded shadow">
+        <h2 className="text-2xl font-bold text-center mb-6">Login</h2>
+        <form onSubmit={handleLogin} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Email:</label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
 
-        <input
-          type="email"
-          placeholder="Email"
-          className="w-full p-3 mb-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          className="w-full p-3 mb-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        
-        <button
-          onClick={login}
-          className="w-full py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-400"
-          disabled={loading}
-        >
-          {loading ? "Logging In..." : "Log In"}
-        </button>
-        
-        <div className="mt-4 text-center">
-          <p className="text-sm text-gray-600">
-            Don't have an account? <a href="/signup" className="text-blue-500 hover:underline">Sign Up</a>
-          </p>
-        </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Password:</label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Login as:</label>
+            <select
+              value={role}
+              onChange={(e) => setRole(e.target.value)}
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 bg-white rounded shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value="tenant">Tenant</option>
+              <option value="landlord">Landlord</option>
+            </select>
+          </div>
+
+          <button
+            type="submit"
+            className="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            Login
+          </button>
+
+          {error && <p className="text-red-600 text-sm mt-2">{error}</p>}
+        </form>
       </div>
     </div>
   );
